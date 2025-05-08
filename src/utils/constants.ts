@@ -19,15 +19,15 @@ export const GRADE_LEVELS = [
   'الصف الثاني عشر'
 ];
 
-// Fee Types
-export const FEE_TYPES = {
-  TUITION: 'tuition',
-  TRANSPORTATION: 'transportation',
-  UNIFORM: 'uniform',
-  BOOKS: 'books',
-  ACTIVITIES: 'activities',
-  OTHER: 'other'
-};
+// Fee Types - changed from object to array format to match usage in components
+export const FEE_TYPES = [
+  { id: 'tuition', name: 'رسوم دراسية' },
+  { id: 'transportation', name: 'نقل مدرسي' },
+  { id: 'uniform', name: 'زي مدرسي' },
+  { id: 'books', name: 'كتب' },
+  { id: 'activities', name: 'أنشطة' },
+  { id: 'other', name: 'رسوم أخرى' }
+];
 
 // Installment Plans
 export const INSTALLMENT_PLANS = [
