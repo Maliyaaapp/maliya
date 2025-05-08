@@ -1,5 +1,6 @@
 import  { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
+import AuthDebugger from './components/AuthDebugger';
 
 // Auth Components
 import Login from './pages/auth/Login';
@@ -41,47 +42,50 @@ const App = () => {
   };
 
   return (
-    <Routes>
-      <Route path="/login" element={!isAuthenticated ? <Login /> : (user?.role === 'admin' ? <Navigate to="/admin" /> : <Navigate to="/school" />)} />
-      
-      {/* Admin Routes */}
-      <Route path="/admin" element={
-        <ProtectedRoute roles={['admin']}>
-          <AdminLayout />
-        </ProtectedRoute>
-      }>
-        <Route index element={<AdminDashboard />} />
-        <Route path="schools" element={<SchoolsList />} />
-        <Route path="schools/new" element={<SchoolForm />} />
-        <Route path="schools/:id" element={<SchoolForm />} />
-        <Route path="accounts" element={<AdminAccountsList />} />
-        <Route path="accounts/new" element={<AdminAccountForm />} />
-        <Route path="accounts/:id" element={<AdminAccountForm />} />
-        <Route path="subscriptions" element={<SubscriptionsList />} />
-      </Route>
+    <>
+      <Routes>
+        <Route path="/login" element={!isAuthenticated ? <Login /> : (user?.role === 'admin' ? <Navigate to="/admin" /> : <Navigate to="/school" />)} />
+        
+        {/* Admin Routes */}
+        <Route path="/admin" element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminLayout />
+          </ProtectedRoute>
+        }>
+          <Route index element={<AdminDashboard />} />
+          <Route path="schools" element={<SchoolsList />} />
+          <Route path="schools/new" element={<SchoolForm />} />
+          <Route path="schools/:id" element={<SchoolForm />} />
+          <Route path="accounts" element={<AdminAccountsList />} />
+          <Route path="accounts/new" element={<AdminAccountForm />} />
+          <Route path="accounts/:id" element={<AdminAccountForm />} />
+          <Route path="subscriptions" element={<SubscriptionsList />} />
+        </Route>
 
-      {/* School Routes */}
-      <Route path="/school" element={
-        <ProtectedRoute roles={['schoolAdmin', 'gradeManager']}>
-          <SchoolLayout />
-        </ProtectedRoute>
-      }>
-        <Route index element={<SchoolDashboard />} />
-        <Route path="students" element={<Students />} />
-        <Route path="students/new" element={<StudentForm />} />
-        <Route path="students/:id" element={<StudentForm />} />
-        <Route path="fees" element={<Fees />} />
-        <Route path="fees/new" element={<FeeForm />} />
-        <Route path="fees/:id" element={<FeeForm />} />
-        <Route path="installments" element={<Installments />} />
-        <Route path="installments/new" element={<InstallmentForm />} />
-        <Route path="installments/:id" element={<InstallmentForm />} />
-        <Route path="communications" element={<Communications />} />
-        <Route path="settings" element={<Settings />} />
-      </Route>
+        {/* School Routes */}
+        <Route path="/school" element={
+          <ProtectedRoute roles={['schoolAdmin', 'gradeManager']}>
+            <SchoolLayout />
+          </ProtectedRoute>
+        }>
+          <Route index element={<SchoolDashboard />} />
+          <Route path="students" element={<Students />} />
+          <Route path="students/new" element={<StudentForm />} />
+          <Route path="students/:id" element={<StudentForm />} />
+          <Route path="fees" element={<Fees />} />
+          <Route path="fees/new" element={<FeeForm />} />
+          <Route path="fees/:id" element={<FeeForm />} />
+          <Route path="installments" element={<Installments />} />
+          <Route path="installments/new" element={<InstallmentForm />} />
+          <Route path="installments/:id" element={<InstallmentForm />} />
+          <Route path="communications" element={<Communications />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
 
-      <Route path="/" element={<Navigate to={isAuthenticated ? (user?.role === 'admin' ? '/admin' : '/school') : '/login'} />} />
-    </Routes>
+        <Route path="/" element={<Navigate to={isAuthenticated ? (user?.role === 'admin' ? '/admin' : '/school') : '/login'} />} />
+      </Routes>
+      {isAuthenticated && <AuthDebugger />}
+    </>
   );
 };
 

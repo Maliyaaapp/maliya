@@ -13,7 +13,9 @@ export const databases = new Databases(client);
 export const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID || '681afac100096bf95c8a';
 export const USERS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_USERS_COLLECTION_ID || '681afafb0007a8105c79';
 export const SCHOOLS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_SCHOOLS_COLLECTION_ID || '681afaec00356fb53ee9';
-export const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
+
+// HARDCODED ADMIN EMAIL - Required for proper admin dashboard access
+export const ADMIN_EMAIL = "admin@maliyaa.com"; // Replace this with your actual admin email
 
 // Check if Appwrite configuration is properly set
 const isAppwriteConfigured = () => {

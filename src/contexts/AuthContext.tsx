@@ -37,6 +37,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // This effect will run whenever the user state changes
+  // It ensures the admin user always has the correct role
+  useEffect(() => {
+    if (user && user.email === ADMIN_EMAIL && user.role !== 'admin') {
+      console.log('Forcing admin role for user with email:', user.email);
+      setUser({
+        ...user,
+        role: 'admin'
+      });
+    }
+  }, [user]);
+
+  // Add a cleanup effect to ensure clean login state for admin
+  useEffect(() => {
+    // Check local storage for any user data
+    try {
+      const accounts = JSON.parse(localStorage.getItem('accounts') || '[]');
+      const adminAccount = accounts.find((a: any) => a.email === ADMIN_EMAIL);
+      
+      // If admin account exists, ensure it has admin role
+      if (adminAccount && adminAccount.role !== 'admin') {
+        console.log('Fixing admin role in localStorage');
+        adminAccount.role = 'admin';
+        localStorage.setItem('accounts', JSON.stringify(accounts));
+      }
+    } catch (e) {
+      console.error('Error checking localStorage accounts:', e);
+    }
+  }, []);
+
   useEffect(() => {
     checkAuth();
   }, []);
