@@ -141,9 +141,21 @@ const Fees = () => {
   }, [selectedGrade, selectedType, selectedStatus, selectedStudent, fees]);
 
   const processStudentFeeGroups = (feesList: Fee[]) => {
+    // Add safety check to ensure feesList is an array
+    if (!feesList || !Array.isArray(feesList)) {
+      console.error('Error: feesList is not an array:', feesList);
+      setStudentFeeGroups([]);
+      return;
+    }
+    
     const studentMap = new Map<string, StudentFeeGroup>();
     
     feesList.forEach(fee => {
+      if (!fee || typeof fee !== 'object') {
+        console.error('Invalid fee object:', fee);
+        return; // Skip this iteration
+      }
+      
       if (!studentMap.has(fee.studentId)) {
         studentMap.set(fee.studentId, {
           studentId: fee.studentId,

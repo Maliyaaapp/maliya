@@ -421,7 +421,20 @@ class DataStore {
   getFees(schoolId?: string, studentId?: string, grades?: string | string[]): Fee[] {
     try {
       const fees = localStorage.getItem('fees');
-      let parsed = fees ? JSON.parse(fees) : [];
+      
+      // Add extra validation to ensure we have an array
+      let parsed;
+      try {
+        parsed = fees ? JSON.parse(fees) : [];
+        // Ensure parsed is an array
+        if (!Array.isArray(parsed)) {
+          console.error('Parsed fees is not an array:', parsed);
+          parsed = [];
+        }
+      } catch (parseError) {
+        console.error('Error parsing fees JSON:', parseError);
+        parsed = [];
+      }
       
       if (schoolId) {
         parsed = parsed.filter((f: Fee) => f.schoolId === schoolId);

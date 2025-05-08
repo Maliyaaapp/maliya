@@ -3,6 +3,9 @@ import { account, databases, DATABASE_ID, USERS_COLLECTION_ID, ADMIN_EMAIL, clie
 import { ID, Query } from 'appwrite';
 import api from '../services/api';
 
+// Add some debugging for the admin email
+console.log('Admin email configured as:', ADMIN_EMAIL);
+
 // Extend Role to include 'admin'
 type Role = 'admin' | 'schoolAdmin' | 'gradeManager';
 
@@ -143,6 +146,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (emailOrUsername: string, password: string) => {
     console.log('Attempting login with:', emailOrUsername);
+    console.log('Admin email check will be against:', ADMIN_EMAIL);
+    
     try {
       // First try to authenticate using the correct method for SDK v17.0.2
       try {
@@ -171,6 +176,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const userData = await account.get();
         console.log('User authenticated:', userData.email);
+        console.log('Is admin check:', userData.email === ADMIN_EMAIL, 'Result:', userData.email === ADMIN_EMAIL ? 'admin' : 'not admin');
         
         // Now try to get the user document but handle permission errors gracefully
         try {
@@ -255,13 +261,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             id: userInfo.$id,
             name: userInfo.name,
             email: userInfo.email,
-            role: userInfo.role as Role,
+            role: userInfo.email === ADMIN_EMAIL ? 'admin' : (userInfo.role as Role),
             schoolId: userInfo.schoolId,
             schoolName: userInfo.schoolName,
             schoolLogo: userInfo.schoolLogo,
             gradeLevels: userInfo.gradeLevels,
             username: userInfo.username
           };
+          console.log('Setting user with role:', user.role);
           setUser(user);
           setIsAuthenticated(true);
         } catch (error) {
@@ -273,6 +280,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             email: userData.email,
             role: userData.email === ADMIN_EMAIL ? 'admin' : 'schoolAdmin'
           });
+          console.log('Setting user with fallback role:', userData.email === ADMIN_EMAIL ? 'admin' : 'schoolAdmin');
           setIsAuthenticated(true);
         }
       } catch (userDataError) {

@@ -2,8 +2,8 @@ import { Client, Account, Databases } from 'appwrite';
 
 // Create a client
 const client = new Client()
-    .setEndpoint(import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://fra.cloud.appwrite.io/v1')
-    .setProject(import.meta.env.VITE_APPWRITE_PROJECT_ID || '681afa81001965d1f562');
+    .setEndpoint('https://fra.cloud.appwrite.io/v1') // Appwrite endpoint
+    .setProject('681afa81001965d1f562'); // Your project ID
 
 // Register/login services
 export const account = new Account(client);
