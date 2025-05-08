@@ -7,6 +7,7 @@ import dataStore from '../../../services/dataStore';
 import pdfPrinter from '../../../services/pdfPrinter';
 import { generateFeeTemplateCSV } from '../../../services/importExport';
 import ImportDialog from '../../../components/ImportDialog';
+import { initializeSampleData } from '../../../utils/initialData';
 
 interface Fee {
   id: string;
@@ -54,12 +55,35 @@ const Fees = () => {
   const [importResult, setImportResult] = useState<{studentsCount: number; feesCount: number} | null>(null);
   const [importSuccess, setImportSuccess] = useState<boolean>(false);
   const [paymentProcessing, setPaymentProcessing] = useState<string | null>(null);
+  const [showNoDataMessage, setShowNoDataMessage] = useState(false);
   
   // For student-based view
   const [studentList, setStudentList] = useState<{id: string, name: string, grade: string}[]>([]);
   const [studentFeeGroups, setStudentFeeGroups] = useState<StudentFeeGroup[]>([]);
   const [displayMode, setDisplayMode] = useState<'list' | 'student'>('student');
   const [expandedStudents, setExpandedStudents] = useState<Record<string, boolean>>({});
+
+  // Initialize sample data if needed
+  useEffect(() => {
+    const checkAndInitializeData = async () => {
+      try {
+        const storedFees = localStorage.getItem('fees');
+        const parsedFees = storedFees ? JSON.parse(storedFees) : [];
+        
+        if (!Array.isArray(parsedFees) || parsedFees.length === 0) {
+          console.log('No fees data found, initializing sample data...');
+          const result = initializeSampleData(false);
+          if (result.success) {
+            console.log('Sample data initialized successfully');
+          }
+        }
+      } catch (err) {
+        console.error('Error checking/initializing data:', err);
+      }
+    };
+    
+    checkAndInitializeData();
+  }, []);
 
   // Fetch data and subscribe to changes
   useEffect(() => {
@@ -75,6 +99,13 @@ const Fees = () => {
         } else {
           fetchedFees = dataStore.getFees(user?.schoolId);
           fetchedStudents = dataStore.getStudents(user?.schoolId);
+        }
+        
+        // Check if we have data
+        if (!Array.isArray(fetchedFees) || fetchedFees.length === 0) {
+          setShowNoDataMessage(true);
+        } else {
+          setShowNoDataMessage(false);
         }
         
         // Augment fees with student phone numbers for WhatsApp
@@ -101,6 +132,7 @@ const Fees = () => {
         processStudentFeeGroups(augmentedFees);
       } catch (error) {
         console.error('Error fetching data:', error);
+        setShowNoDataMessage(true);
       } finally {
         setIsLoading(false);
       }
@@ -493,8 +525,42 @@ const Fees = () => {
 
   if (isLoading) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <div className="flex justify-center items-center h-full">
+        <div className="loader"></div>
+      </div>
+    );
+  }
+
+  if (showNoDataMessage) {
+    return (
+      <div className="p-6">
+        <div className="mb-4 flex justify-between">
+          <h1 className="text-2xl font-bold">الرسوم الدراسية</h1>
+          <div className="flex space-x-2">
+            <button
+              className="btn btn-primary flex items-center space-x-1"
+              onClick={() => {
+                const result = initializeSampleData(true);
+                if (result.success) {
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 1000);
+                }
+              }}
+            >
+              <Plus size={16} />
+              <span>إضافة بيانات تجريبية</span>
+            </button>
+            <Link to="/school/fees/new" className="btn btn-primary flex items-center space-x-1">
+              <Plus size={16} />
+              <span>إضافة رسوم</span>
+            </Link>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md text-center">
+          <h2 className="text-xl font-bold mb-2">لا توجد بيانات</h2>
+          <p className="mb-4">لم يتم العثور على أي رسوم دراسية. يمكنك إضافة رسوم جديدة أو استخدام البيانات التجريبية.</p>
+        </div>
       </div>
     );
   }
