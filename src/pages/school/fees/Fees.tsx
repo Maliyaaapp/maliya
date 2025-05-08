@@ -15,6 +15,7 @@ interface Fee {
   studentName: string;
   grade: string;
   feeType: string;
+  description?: string;
   transportationType?: 'one-way' | 'two-way';
   amount: number;
   discount: number;
@@ -344,11 +345,11 @@ const Fees = () => {
     
     try {
       // Update fee to paid status
-      const updatedFee = {
+      const updatedFee: Partial<Fee> = {
         ...fee,
         paid: fee.amount - fee.discount, // Pay full amount minus discount
         balance: 0,
-        status: 'paid'
+        status: 'paid' as 'paid'  // Use type assertion to fix the issue
       };
       
       // Save updated fee
@@ -380,11 +381,11 @@ const Fees = () => {
     try {
       // Update all fees to paid status
       studentFees.forEach(fee => {
-        const updatedFee = {
+        const updatedFee: Partial<Fee> = {
           ...fee,
           paid: fee.amount - fee.discount, // Pay full amount minus discount
           balance: 0,
-          status: 'paid'
+          status: 'paid' as 'paid'  // Use type assertion to fix the issue
         };
         
         // Save updated fee
